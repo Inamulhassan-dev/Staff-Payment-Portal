@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Staff Management - Staff Payment Portal</title>
+    <link rel="stylesheet" href="../css/style.css?v=2.1">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <button id="themeToggleBtn" class="theme-toggle-btn" onclick="toggleTheme()" style="position: fixed; top: 20px; right: 20px; z-index: 9999;">
+        <i class="fas fa-moon"></i>
+    </button>
+
+    <div class="dashboard">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h2><i class="fas fa-wallet"></i> SPP Admin</h2>
+            </div>
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a href="dashboard.html" class="nav-link">
+                        <i class="fas fa-home"></i>
+                        <span>Dashboard</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="staff-management.html" class="nav-link active">
+                        <i class="fas fa-users"></i>
+                        <span>Staff Management</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="payroll.html" class="nav-link">
+                        <i class="fas fa-money-check-alt"></i>
+                        <span>Payroll</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="leave-approvals.html" class="nav-link">
+                        <i class="fas fa-calendar-check"></i>
+                        <span>Leave Approvals</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="reports.html" class="nav-link">
+                        <i class="fas fa-chart-bar"></i>
+                        <span>Reports</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link" onclick="logout()">
+                        <i class="fas fa-sign-out-alt"></i>
+                        <span>Logout</span>
+                    </a>
+                </li>
+            </ul>
+        </aside>
+
+        <main class="main-content">
+            <div class="header">
+                <div>
+                    <h1>Staff Management</h1>
+                    <p>Manage employee profiles and salary structures</p>
+                </div>
+                <div>
+                    <button class="btn btn-primary btn-sm" onclick="openAddUserModal()">
+                        <i class="fas fa-plus"></i> Add Staff
+                    </button>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h2>All Staff Members</h2>
+                    <input type="text" id="searchStaff" placeholder="Search staff..." 
+                           style="padding: 8px 15px; border: 2px solid #e5e7eb; border-radius: 10px;"
+                           onkeyup="filterStaff()">
+                </div>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Employee ID</th>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Department</th>
+                            <th>Designation</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="staffTable">
+                        <tr>
+                            <td colspan="6" style="text-align: center;">Loading...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </main>
+    </div>
+
+    <div class="modal" id="addUserModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Add New Staff</h2>
+                <button class="close-btn" onclick="closeModal('addUserModal')">&times;</button>
+            </div>
+            <form id="addUserForm">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Employee ID</label>
+                        <input type="text" name="employee_id" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Full Name</label>
+                        <input type="text" name="full_name" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" name="email" required>
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" name="password" required>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Department</label>
+                        <input type="text" name="department" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Designation</label>
+                        <input type="text" name="designation" required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Phone</label>
+                        <input type="text" name="phone" required>
+                    </div>
+                    <div class="form-group">
+                        <label>PAN Number</label>
+                        <input type="text" name="pan_number" required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Bank Name</label>
+                        <input type="text" name="bank_name" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Bank Account</label>
+                        <input type="text" name="bank_account" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>IFSC Code</label>
+                    <input type="text" name="ifsc_code" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Add Staff</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="modal" id="salaryModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Salary Structure</h2>
+                <button class="close-btn" onclick="closeModal('salaryModal')">&times;</button>
+            </div>
+            <form id="salaryForm">
+                <input type="hidden" name="user_id" id="salaryUserId">
+                <div class="form-group">
+                    <label>Basic Salary</label>
+                    <input type="number" name="basic_salary" required>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>HRA</label>
+                        <input type="number" name="hra" value="0">
+                    </div>
+                    <div class="form-group">
+                        <label>Transport Allowance</label>
+                        <input type="number" name="ta" value="0">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Medical Allowance</label>
+                        <input type="number" name="medical_allowance" value="0">
+                    </div>
+                    <div class="form-group">
+                        <label>Special Allowance</label>
+                        <input type="number" name="special_allowance" value="0">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>PF Deduction</label>
+                        <input type="number" name="pf_deduction" value="0">
+                    </div>
+                    <div class="form-group">
+                        <label>Tax Deduction</label>
+                        <input type="number" name="tax_deduction" value="0">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Other Deductions</label>
+                    <input type="number" name="other_deductions" value="0">
+                </div>
+                <button type="submit" class="btn btn-primary">Save Salary Structure</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="../js/app.js"></script>
+    <script>
+        if (!checkAdminAuth()) {}
+        
+        let allStaff = [];
+
+        async function loadStaff() {
+            const token = localStorage.getItem('token');
+            const response = await fetch('http://localhost:8000/api/admin/users', {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            allStaff = await response.json();
+            renderStaffTable(allStaff);
+        }
+
+        function renderStaffTable(staff) {
+            const tbody = document.getElementById('staffTable');
+            if (staff.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align: center;">No staff members found</td></tr>';
+                return;
+            }
+            tbody.innerHTML = staff.map(s => `
+                <tr>
+                    <td>${s.employee_id}</td>
+                    <td>${s.full_name}</td>
+                    <td>${s.email}</td>
+                    <td>${s.department}</td>
+                    <td>${s.designation}</td>
+                    <td>
+                        <button class="action-btn view" onclick="viewStaff(${s.id})">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                        <button class="action-btn edit" onclick="openSalaryModal(${s.id})">
+                            <i class="fas fa-rupee-sign"></i>
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function filterStaff() {
+            const search = document.getElementById('searchStaff').value.toLowerCase();
+            const filtered = allStaff.filter(s => 
+                s.full_name.toLowerCase().includes(search) ||
+                s.email.toLowerCase().includes(search) ||
+                s.employee_id.toLowerCase().includes(search)
+            );
+            renderStaffTable(filtered);
+        }
+
+        function openAddUserModal() {
+            document.getElementById('addUserModal').classList.add('active');
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('active');
+        }
+
+        function openSalaryModal(userId) {
+            document.getElementById('salaryUserId').value = userId;
+            document.getElementById('salaryModal').classList.add('active');
+        }
+
+        function viewStaff(id) {
+            const staff = allStaff.find(s => s.id === id);
+            alert(`Employee Details:\n\nName: ${staff.full_name}\nEmail: ${staff.email}\nDepartment: ${staff.department}\nDesignation: ${staff.designation}\nPhone: ${staff.phone}`);
+        }
+
+        document.getElementById('addUserForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const data = Object.fromEntries(formData);
+            
+            const token = localStorage.getItem('token');
+            const response = await fetch('http://localhost:8000/api/admin/users', {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            });
+            
+            if (response.ok) {
+                alert('Staff added successfully!');
+                closeModal('addUserModal');
+                e.target.reset();
+                loadStaff();
+            } else {
+                const error = await response.json();
+                alert('Error: ' + error.detail);
+            }
+        });
+
+        document.getElementById('salaryForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const data = Object.fromEntries(formData);
+            
+            Object.keys(data).forEach(key => {
+                data[key] = parseFloat(data[key]) || 0;
+            });
+            
+            const token = localStorage.getItem('token');
+            const response = await fetch('http://localhost:8000/api/admin/salary-structure', {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            });
+            
+            if (response.ok) {
+                alert('Salary structure saved!');
+                closeModal('salaryModal');
+                e.target.reset();
+            } else {
+                alert('Error saving salary structure');
+            }
+        });
+
+        loadStaff();
+    </script>
+</body>
+</html>

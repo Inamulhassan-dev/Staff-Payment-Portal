@@ -1,0 +1,11 @@
+services:
+  app:
+    image: python:3.11-slim
+    container_name: staff-payment-portal
+    working_dir: /app
+    volumes:
+      - ./:/app
+    command: sh -c "pip install --no-cache-dir -r backend/requirements.txt && python backend/main.py"
+    ports:
+      - "8000:8000"
+    restart: unless-stopped

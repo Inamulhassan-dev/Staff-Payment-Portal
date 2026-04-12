@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reports - Staff Payment Portal</title>
+    <link rel="stylesheet" href="../css/style.css?v=2.1">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <button id="themeToggleBtn" class="theme-toggle-btn" onclick="toggleTheme()" style="position: fixed; top: 20px; right: 20px; z-index: 9999;">
+        <i class="fas fa-moon"></i>
+    </button>
+
+    <div class="dashboard">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h2><i class="fas fa-wallet"></i> SPP Admin</h2>
+            </div>
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a href="dashboard.html" class="nav-link">
+                        <i class="fas fa-home"></i>
+                        <span>Dashboard</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="staff-management.html" class="nav-link">
+                        <i class="fas fa-users"></i>
+                        <span>Staff Management</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="payroll.html" class="nav-link">
+                        <i class="fas fa-money-check-alt"></i>
+                        <span>Payroll</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="leave-approvals.html" class="nav-link">
+                        <i class="fas fa-calendar-check"></i>
+                        <span>Leave Approvals</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="reports.html" class="nav-link active">
+                        <i class="fas fa-chart-bar"></i>
+                        <span>Reports</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link" onclick="logout()">
+                        <i class="fas fa-sign-out-alt"></i>
+                        <span>Logout</span>
+                    </a>
+                </li>
+            </ul>
+        </aside>
+
+        <main class="main-content">
+            <div class="header">
+                <div>
+                    <h1>Payroll Reports</h1>
+                    <p>View payroll summaries and statistics</p>
+                </div>
+                <div style="display: flex; gap: 10px;">
+                    <select id="reportMonth" onchange="loadSummary()" style="padding: 8px 15px; border: 2px solid #e5e7eb; border-radius: 10px;">
+                        <option value="1">January</option>
+                        <option value="2">February</option>
+                        <option value="3">March</option>
+                        <option value="4">April</option>
+                        <option value="5">May</option>
+                        <option value="6">June</option>
+                        <option value="7">July</option>
+                        <option value="8">August</option>
+                        <option value="9">September</option>
+                        <option value="10">October</option>
+                        <option value="11">November</option>
+                        <option value="12">December</option>
+                    </select>
+                    <select id="reportYear" onchange="loadSummary()" style="padding: 8px 15px; border: 2px solid #e5e7eb; border-radius: 10px;">
+                        <option value="2024">2024</option>
+                        <option value="2025">2025</option>
+                        <option value="2026" selected>2026</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-card primary">
+                    <div class="icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <h3 id="totalEmployees">0</h3>
+                    <p>Total Employees</p>
+                </div>
+
+                <div class="stat-card success">
+                    <div class="icon">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <h3 id="paidCount">0</h3>
+                    <p>Paid Salaries</p>
+                </div>
+
+                <div class="stat-card warning">
+                    <div class="icon">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <h3 id="pendingCount">0</h3>
+                    <p>Pending Payments</p>
+                </div>
+
+                <div class="stat-card primary">
+                    <div class="icon">
+                        <i class="fas fa-rupee-sign"></i>
+                    </div>
+                    <h3 id="totalPayout">0</h3>
+                    <p>Total Payout</p>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h2>Payroll Summary</h2>
+                </div>
+                <div class="salary-breakdown">
+                    <div class="salary-item">
+                        <span>Total Gross Salary</span>
+                        <span id="totalGross">Rs.0</span>
+                    </div>
+                    <div class="salary-item">
+                        <span>Total Deductions</span>
+                        <span id="totalDeductions">Rs.0</span>
+                    </div>
+                    <div class="salary-item total">
+                        <span>Net Payout</span>
+                        <span id="netPayout">Rs.0</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h2>Payment Status Distribution</h2>
+                </div>
+                <div id="statusChart" style="padding: 20px;">
+                    <div style="display: flex; gap: 20px; justify-content: center;">
+                        <div style="text-align: center;">
+                            <div style="width: 100px; height: 100px; border-radius: 50%; background: conic-gradient(var(--success) 0deg, var(--success) var(--successDeg, 0deg), var(--light) var(--successDeg, 0deg)); display: flex; align-items: center; justify-content: center; margin: 0 auto;">
+                                <div style="width: 70px; height: 70px; border-radius: 50%; background: white;"></div>
+                            </div>
+                            <p style="margin-top: 10px;">Paid: <span id="chartPaid">0</span></p>
+                        </div>
+                        <div style="text-align: center;">
+                            <div style="width: 100px; height: 100px; border-radius: 50%; background: conic-gradient(var(--warning) 0deg, var(--warning) var(--warningDeg, 0deg), var(--light) var(--warningDeg, 0deg)); display: flex; align-items: center; justify-content: center; margin: 0 auto;">
+                                <div style="width: 70px; height: 70px; border-radius: 50%; background: white;"></div>
+                            </div>
+                            <p style="margin-top: 10px;">Pending: <span id="chartPending">0</span></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="../js/app.js"></script>
+    <script>
+        if (!checkAdminAuth()) {}
+
+        const currentMonth = new Date().getMonth() + 1;
+        document.getElementById('reportMonth').value = currentMonth;
+
+        async function loadSummary() {
+            const token = localStorage.getItem('token');
+            const month = document.getElementById('reportMonth').value;
+            const year = document.getElementById('reportYear').value;
+            
+            const response = await fetch(`http://localhost:8000/api/admin/reports/summary?month=${month}&year=${year}`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            
+            if (response.ok) {
+                const summary = await response.json();
+                
+                document.getElementById('totalEmployees').textContent = summary.total_employees;
+                document.getElementById('paidCount').textContent = summary.paid_count;
+                document.getElementById('pendingCount').textContent = summary.pending_count;
+                document.getElementById('totalPayout').textContent = `Rs.${summary.total_gross_salary.toLocaleString('en-IN')}`;
+                document.getElementById('totalGross').textContent = `Rs.${summary.total_gross_salary.toLocaleString('en-IN')}`;
+                document.getElementById('totalDeductions').textContent = `Rs.${summary.total_deductions.toLocaleString('en-IN')}`;
+                document.getElementById('netPayout').textContent = `Rs.${(summary.total_gross_salary - summary.total_deductions).toLocaleString('en-IN')}`;
+                
+                document.getElementById('chartPaid').textContent = summary.paid_count;
+                document.getElementById('chartPending').textContent = summary.pending_count;
+                
+                const total = summary.paid_count + summary.pending_count;
+                if (total > 0) {
+                    const paidDeg = (summary.paid_count / total) * 360;
+                    document.getElementById('statusChart').querySelector('div').innerHTML = `
+                        <div style="text-align: center;">
+                            <div style="width: 100px; height: 100px; border-radius: 50%; background: conic-gradient(var(--success) 0deg, var(--success) ${paidDeg}deg, var(--warning) ${paidDeg}deg); display: flex; align-items: center; justify-content: center; margin: 0 auto;">
+                                <div style="width: 70px; height: 70px; border-radius: 50%; background: white;"></div>
+                            </div>
+                            <p style="margin-top: 10px;">Paid: ${summary.paid_count}</p>
+                        </div>
+                        <div style="text-align: center;">
+                            <div style="width: 100px; height: 100px; border-radius: 50%; background: var(--warning); display: flex; align-items: center; justify-content: center; margin: 0 auto;">
+                                <div style="width: 70px; height: 70px; border-radius: 50%; background: white;"></div>
+                            </div>
+                            <p style="margin-top: 10px;">Pending: ${summary.pending_count}</p>
+                        </div>
+                    `;
+                }
+            }
+        }
+
+        loadSummary();
+    </script>
+</body>
+</html>

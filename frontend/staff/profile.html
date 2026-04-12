@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Profile - Staff Payment Portal</title>
+    <link rel="stylesheet" href="../css/style.css?v=2.1">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<body>
+    <button id="themeToggleBtn" class="theme-toggle-btn" onclick="toggleTheme()" style="position: fixed; top: 20px; right: 20px; z-index: 9999;">
+        <i class="fas fa-moon"></i>
+    </button>
+
+    <div class="dashboard">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h2><i class="fas fa-wallet"></i> SPP Staff</h2>
+            </div>
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a href="dashboard.html" class="nav-link">
+                        <i class="fas fa-home"></i>
+                        <span>Dashboard</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="payslips.html" class="nav-link">
+                        <i class="fas fa-file-invoice-dollar"></i>
+                        <span>My Payslips</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="profile.html" class="nav-link active">
+                        <i class="fas fa-user"></i>
+                        <span>My Profile</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link" onclick="logout()">
+                        <i class="fas fa-sign-out-alt"></i>
+                        <span>Logout</span>
+                    </a>
+                </li>
+            </ul>
+        </aside>
+
+        <main class="main-content">
+            <div class="header">
+                <div>
+                    <h1>My Profile</h1>
+                    <p>View your personal and salary information</p>
+                </div>
+            </div>
+
+            <div class="card profile-section">
+                <div class="profile-header">
+                    <div class="profile-avatar">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div>
+                        <h2 id="profileName">Loading...</h2>
+                        <p id="profileDesignation" style="color: #6b7280;"></p>
+                    </div>
+                </div>
+
+                <div class="info-grid">
+                    <div class="info-item">
+                        <label>Employee ID</label>
+                        <span id="profileEmployeeId">-</span>
+                    </div>
+                    <div class="info-item">
+                        <label>Email</label>
+                        <span id="profileEmail">-</span>
+                    </div>
+                    <div class="info-item">
+                        <label>Department</label>
+                        <span id="profileDepartment">-</span>
+                    </div>
+                    <div class="info-item">
+                        <label>Designation</label>
+                        <span id="profileDesignation2">-</span>
+                    </div>
+                    <div class="info-item">
+                        <label>Phone</label>
+                        <span id="profilePhone">-</span>
+                    </div>
+                    <div class="info-item">
+                        <label>PAN Number</label>
+                        <span id="profilePan">-</span>
+                    </div>
+                    <div class="info-item">
+                        <label>Bank Name</label>
+                        <span id="profileBankName">-</span>
+                    </div>
+                    <div class="info-item">
+                        <label>Bank Account</label>
+                        <span id="profileBankAccount">-</span>
+                    </div>
+                    <div class="info-item">
+                        <label>IFSC Code</label>
+                        <span id="profileIfsc">-</span>
+                    </div>
+                    <div class="info-item">
+                        <label>Joining Date</label>
+                        <span id="profileJoinDate">-</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card profile-section">
+                <div class="card-header">
+                    <h2>My Salary Structure</h2>
+                </div>
+                <div id="salaryStructure">
+                    <p style="text-align: center; color: #6b7280;">Loading salary structure...</p>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- AI Chat Widget -->
+    <div id="aiChatWidget" style="position: fixed; bottom: 20px; right: 20px; z-index: 1000;">
+        <button id="aiChatBtn" style="background: var(--primary); color: white; border: none; border-radius: 50%; width: 60px; height: 60px; font-size: 24px; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.2);">
+            <i class="fas fa-robot"></i>
+        </button>
+        <div id="aiChatBox" style="display: none; position: absolute; bottom: 80px; right: 0; width: 300px; background: white; border-radius: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); border: 1px solid #ddd; overflow: hidden; flex-direction: column; height: 400px;">
+            <div style="background: var(--primary); color: white; padding: 15px; font-weight: bold; display: flex; justify-content: space-between;">
+                <span>AI HR Assistant</span>
+                <i class="fas fa-times" id="closeChatBtn" style="cursor: pointer;"></i>
+            </div>
+            <div id="chatMessages" style="flex: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px;">
+                <div style="background: #f1f5f9; padding: 10px; border-radius: 10px; max-width: 80%; align-self: flex-start; font-size: 14px;">Hi! I'm your AI HR Assistant. Ask me about your leaves, payday, or taxes.</div>
+            </div>
+            <div style="padding: 10px; border-top: 1px solid #ddd; display: flex;">
+                <input type="text" id="chatInput" placeholder="Type a message..." style="flex: 1; border: 1px solid #ddd; border-radius: 5px; padding: 8px; outline: none;">
+                <button id="sendChatBtn" style="background: var(--primary); color: white; border: none; padding: 8px 15px; border-radius: 5px; margin-left: 5px; cursor: pointer;"><i class="fas fa-paper-plane"></i></button>
+            </div>
+        </div>
+    </div>
+
+    <script src="../js/app.js"></script>
+    <script>
+        // AI Chat Logic
+        document.getElementById('aiChatBtn').addEventListener('click', () => {
+            const box = document.getElementById('aiChatBox');
+            box.style.display = box.style.display === 'none' ? 'flex' : 'none';
+        });
+
+        document.getElementById('closeChatBtn').addEventListener('click', () => {
+            document.getElementById('aiChatBox').style.display = 'none';
+        });
+
+        async function sendChatMessage() {
+            const input = document.getElementById('chatInput');
+            const messages = document.getElementById('chatMessages');
+            const text = input.value.trim();
+            if (!text) return;
+
+            const userMsg = document.createElement('div');
+            userMsg.style.cssText = 'background: var(--primary); color: white; padding: 10px; border-radius: 10px; max-width: 80%; align-self: flex-end; font-size: 14px;';
+            userMsg.textContent = text;
+            messages.appendChild(userMsg);
+            input.value = '';
+            messages.scrollTop = messages.scrollHeight;
+
+            try {
+                const res = await apiRequest('/staff/ai/chat', {
+                    method: 'POST',
+                    body: JSON.stringify({ message: text })
+                });
+                const data = await res.json();
+
+                const aiMsg = document.createElement('div');
+                aiMsg.style.cssText = 'background: #f1f5f9; padding: 10px; border-radius: 10px; max-width: 80%; align-self: flex-start; font-size: 14px;';
+                aiMsg.textContent = data.response;
+                messages.appendChild(aiMsg);
+                messages.scrollTop = messages.scrollHeight;
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        document.getElementById('sendChatBtn').addEventListener('click', sendChatMessage);
+        document.getElementById('chatInput').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') sendChatMessage();
+        });
+
+        if (!checkStaffAuth()) { }
+
+        async function loadProfile() {
+            const token = localStorage.getItem('token');
+            const user = JSON.parse(localStorage.getItem('user'));
+
+            const response = await fetch('http://localhost:8000/api/staff/profile', {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            const profile = await response.json();
+
+            document.getElementById('profileName').textContent = profile.full_name;
+            document.getElementById('profileDesignation').textContent = `${profile.department} - ${profile.designation}`;
+            document.getElementById('profileEmployeeId').textContent = profile.employee_id;
+            document.getElementById('profileEmail').textContent = profile.email;
+            document.getElementById('profileDepartment').textContent = profile.department;
+            document.getElementById('profileDesignation2').textContent = profile.designation;
+            document.getElementById('profilePhone').textContent = profile.phone;
+            document.getElementById('profilePan').textContent = profile.pan_number;
+            document.getElementById('profileBankName').textContent = profile.bank_name;
+            document.getElementById('profileBankAccount').textContent = profile.bank_account;
+            document.getElementById('profileIfsc').textContent = profile.ifsc_code;
+            document.getElementById('profileJoinDate').textContent = new Date(profile.joining_date).toLocaleDateString('en-IN');
+        }
+
+        async function loadSalaryStructure() {
+            const token = localStorage.getItem('token');
+
+            try {
+                const response = await fetch('http://localhost:8000/api/staff/salary-structure', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                if (response.ok) {
+                    const salary = await response.json();
+
+                    const totalAllowances = salary.hra + salary.ta + salary.medical_allowance + salary.special_allowance;
+                    const totalDeductions = salary.pf_deduction + salary.tax_deduction + salary.other_deductions;
+                    const grossSalary = salary.basic_salary + totalAllowances;
+                    const netSalary = grossSalary - totalDeductions;
+
+                    document.getElementById('salaryStructure').innerHTML = `
+                        <div class="salary-breakdown">
+                            <h4 style="margin-bottom: 15px;">Earnings</h4>
+                            <div class="salary-item">
+                                <span>Basic Salary</span>
+                                <span>Rs.${salary.basic_salary.toLocaleString('en-IN')}</span>
+                            </div>
+                            <div class="salary-item">
+                                <span>House Rent Allowance (HRA)</span>
+                                <span>Rs.${salary.hra.toLocaleString('en-IN')}</span>
+                            </div>
+                            <div class="salary-item">
+                                <span>Transport Allowance (TA)</span>
+                                <span>Rs.${salary.ta.toLocaleString('en-IN')}</span>
+                            </div>
+                            <div class="salary-item">
+                                <span>Medical Allowance</span>
+                                <span>Rs.${salary.medical_allowance.toLocaleString('en-IN')}</span>
+                            </div>
+                            <div class="salary-item">
+                                <span>Special Allowance</span>
+                                <span>Rs.${salary.special_allowance.toLocaleString('en-IN')}</span>
+                            </div>
+                            <div class="salary-item" style="font-weight: bold; border-top: 2px solid var(--dark);">
+                                <span>Gross Salary</span>
+                                <span>Rs.${grossSalary.toLocaleString('en-IN')}</span>
+                            </div>
+                        </div>
+                        
+                        <div class="salary-breakdown" style="margin-top: 20px;">
+                            <h4 style="margin-bottom: 15px;">Deductions</h4>
+                            <div class="salary-item">
+                                <span>Provident Fund (PF)</span>
+                                <span>Rs.${salary.pf_deduction.toLocaleString('en-IN')}</span>
+                            </div>
+                            <div class="salary-item">
+                                <span>Tax Deduction</span>
+                                <span>Rs.${salary.tax_deduction.toLocaleString('en-IN')}</span>
+                            </div>
+                            <div class="salary-item">
+                                <span>Other Deductions</span>
+                                <span>Rs.${salary.other_deductions.toLocaleString('en-IN')}</span>
+                            </div>
+                            <div class="salary-item" style="font-weight: bold; border-top: 2px solid var(--dark);">
+                                <span>Total Deductions</span>
+                                <span>Rs.${totalDeductions.toLocaleString('en-IN')}</span>
+                            </div>
+                        </div>
+                        
+                        <div class="salary-breakdown" style="margin-top: 20px;">
+                            <div class="salary-item total">
+                                <span>Net Monthly Salary</span>
+                                <span style="color: var(--success);">Rs.${netSalary.toLocaleString('en-IN')}</span>
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    document.getElementById('salaryStructure').innerHTML = `
+                        <p style="text-align: center; color: var(--warning);">
+                            <i class="fas fa-info-circle"></i> Salary structure not set by admin yet.
+                        </p>
+                    `;
+                }
+            } catch (error) {
+                document.getElementById('salaryStructure').innerHTML = `
+                    <p style="text-align: center; color: var(--danger);">
+                        Error loading salary structure.
+                    </p>
+                `;
+            }
+        }
+
+        loadProfile();
+        loadSalaryStructure();
+    </script>
+</body>
+
+</html>

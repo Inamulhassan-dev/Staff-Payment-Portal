@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Leave Management - Staff Payment Portal</title>
+    <link rel="stylesheet" href="../css/style.css?v=2.1">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <button id="themeToggleBtn" class="theme-toggle-btn" onclick="toggleTheme()" style="position: fixed; top: 20px; right: 20px; z-index: 9999;">
+        <i class="fas fa-moon"></i>
+    </button>
+
+    <div class="dashboard">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h2><i class="fas fa-wallet"></i> SPP Staff</h2>
+            </div>
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a href="dashboard.html" class="nav-link">
+                        <i class="fas fa-home"></i>
+                        <span>Dashboard</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="payslips.html" class="nav-link">
+                        <i class="fas fa-file-invoice-dollar"></i>
+                        <span>My Payslips</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="leave.html" class="nav-link active">
+                        <i class="fas fa-calendar-alt"></i>
+                        <span>Leave Management</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="profile.html" class="nav-link">
+                        <i class="fas fa-user"></i>
+                        <span>My Profile</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link" onclick="logout()">
+                        <i class="fas fa-sign-out-alt"></i>
+                        <span>Logout</span>
+                    </a>
+                </li>
+            </ul>
+        </aside>
+
+        <main class="main-content">
+            <div class="header">
+                <div>
+                    <h1>Leave Management</h1>
+                    <p>Apply for and view your leaves</p>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h2>Apply for Leave</h2>
+                </div>
+                <form id="leaveForm" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                    <div class="form-group">
+                        <label>Leave Type</label>
+                        <select id="leaveType" class="form-control" required>
+                            <option value="sick">Sick Leave</option>
+                            <option value="casual">Casual Leave</option>
+                            <option value="earned">Earned Leave</option>
+                            <option value="unpaid">Unpaid Leave</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>From Date</label>
+                        <input type="date" id="fromDate" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label>To Date</label>
+                        <input type="date" id="toDate" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Reason</label>
+                        <textarea id="reason" class="form-control" rows="2" required></textarea>
+                    </div>
+                    <div style="grid-column: 1 / -1;">
+                        <button type="submit" class="btn btn-primary" id="btnSubmitLeave">Submit Leave Request</button>
+                    </div>
+                </form>
+            </div>
+
+            <div class="card" style="margin-top: 20px;">
+                <div class="card-header">
+                    <h2>My Leave History</h2>
+                </div>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Type</th>
+                            <th>From</th>
+                            <th>To</th>
+                            <th>Days</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="leaveList">
+                        <tr>
+                            <td colspan="5" style="text-align: center;">Loading...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </main>
+    </div>
+
+    <!-- AI Chat Widget -->
+    <div id="aiChatWidget" style="position: fixed; bottom: 20px; right: 20px; z-index: 1000;">
+        <button id="aiChatBtn" style="background: var(--primary); color: white; border: none; border-radius: 50%; width: 60px; height: 60px; font-size: 24px; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.2);">
+            <i class="fas fa-robot"></i>
+        </button>
+        <div id="aiChatBox" style="display: none; position: absolute; bottom: 80px; right: 0; width: 300px; background: white; border-radius: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); border: 1px solid #ddd; overflow: hidden; display: flex; flex-direction: column; height: 400px; display: none;">
+            <div style="background: var(--primary); color: white; padding: 15px; font-weight: bold; display: flex; justify-content: space-between;">
+                <span>AI HR Assistant</span>
+                <i class="fas fa-times" id="closeChatBtn" style="cursor: pointer;"></i>
+            </div>
+            <div id="chatMessages" style="flex: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px;">
+                <div style="background: #f1f5f9; padding: 10px; border-radius: 10px; max-width: 80%; align-self: flex-start; font-size: 14px;">Hi! I'm your AI HR Assistant. Ask me about your leaves, payday, or taxes.</div>
+            </div>
+            <div style="padding: 10px; border-top: 1px solid #ddd; display: flex;">
+                <input type="text" id="chatInput" placeholder="Type a message..." style="flex: 1; border: 1px solid #ddd; border-radius: 5px; padding: 8px; outline: none;">
+                <button id="sendChatBtn" style="background: var(--primary); color: white; border: none; padding: 8px 15px; border-radius: 5px; margin-left: 5px; cursor: pointer;"><i class="fas fa-paper-plane"></i></button>
+            </div>
+        </div>
+    </div>
+
+    <script src="../js/app.js"></script>
+    <script>
+        if (!checkStaffAuth()) {}
+        
+        async function loadLeaves() {
+            try {
+                const response = await apiRequest('/staff/leaves');
+                const leaves = await response.json();
+                const tbody = document.getElementById('leaveList');
+                if (leaves.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="5" style="text-align: center;">No leave requests found.</td></tr>';
+                } else {
+                    tbody.innerHTML = leaves.map(l => {
+                        const statusClass = l.status === 'approved' ? 'success' : (l.status === 'rejected' ? 'danger' : 'warning');
+                        return `
+                            <tr>
+                                <td style="text-transform: capitalize;">${l.leave_type}</td>
+                                <td>${new Date(l.from_date).toLocaleDateString()}</td>
+                                <td>${new Date(l.to_date).toLocaleDateString()}</td>
+                                <td>${l.days_count}</td>
+                                <td><span class="badge badge-${statusClass}">${l.status}</span></td>
+                            </tr>
+                        `;
+                    }).join('');
+                }
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        document.getElementById('leaveForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const fromDateStr = document.getElementById('fromDate').value;
+            const toDateStr = document.getElementById('toDate').value;
+            const fromD = new Date(fromDateStr);
+            const toD = new Date(toDateStr);
+            const daysCount = Math.ceil((toD - fromD) / (1000 * 60 * 60 * 24)) + 1;
+            
+            if (daysCount < 1) {
+                showToast('To Date must be after From Date', 'error');
+                return;
+            }
+
+            const data = {
+                leave_type: document.getElementById('leaveType').value,
+                from_date: fromD.toISOString(),
+                to_date: toD.toISOString(),
+                days_count: daysCount,
+                reason: document.getElementById('reason').value
+            };
+
+            const btn = document.getElementById('btnSubmitLeave');
+            btn.disabled = true;
+            btn.textContent = 'Submitting...';
+
+            try {
+                const res = await apiRequest('/staff/leaves', {
+                    method: 'POST',
+                    body: JSON.stringify(data)
+                });
+                
+                if (res.ok) {
+                    showToast('Leave requested successfully');
+                    document.getElementById('leaveForm').reset();
+                    loadLeaves();
+                } else {
+                    const err = await res.json();
+                    showToast(err.detail || 'Error applying leave', 'error');
+                }
+            } catch (error) {
+                showToast('Error connecting to server', 'error');
+            } finally {
+                btn.disabled = false;
+                btn.textContent = 'Submit Leave Request';
+            }
+        });
+
+        loadLeaves();
+
+        // AI Chat Logic
+        const aiChatBtn = document.getElementById('aiChatBtn');
+        const aiChatBox = document.getElementById('aiChatBox');
+        const closeChatBtn = document.getElementById('closeChatBtn');
+        const chatInput = document.getElementById('chatInput');
+        const sendChatBtn = document.getElementById('sendChatBtn');
+        const chatMessages = document.getElementById('chatMessages');
+
+        aiChatBtn.addEventListener('click', () => {
+            aiChatBox.style.display = aiChatBox.style.display === 'none' ? 'flex' : 'none';
+        });
+
+        closeChatBtn.addEventListener('click', () => {
+            aiChatBox.style.display = 'none';
+        });
+
+        async function sendChatMessage() {
+            const text = chatInput.value.trim();
+            if (!text) return;
+
+            // Add user message
+            const userMsg = document.createElement('div');
+            userMsg.style.cssText = 'background: var(--primary); color: white; padding: 10px; border-radius: 10px; max-width: 80%; align-self: flex-end; font-size: 14px;';
+            userMsg.textContent = text;
+            chatMessages.appendChild(userMsg);
+            chatInput.value = '';
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+
+            try {
+                const res = await apiRequest('/staff/ai/chat', {
+                    method: 'POST',
+                    body: JSON.stringify({ message: text })
+                });
+                const data = await res.json();
+
+                // Add AI message
+                const aiMsg = document.createElement('div');
+                aiMsg.style.cssText = 'background: #f1f5f9; padding: 10px; border-radius: 10px; max-width: 80%; align-self: flex-start; font-size: 14px;';
+                aiMsg.textContent = data.response;
+                chatMessages.appendChild(aiMsg);
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        sendChatBtn.addEventListener('click', sendChatMessage);
+        chatInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') sendChatMessage();
+        });
+
+    </script>
+</body>
+</html>

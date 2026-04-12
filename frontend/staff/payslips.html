@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Payslips - Staff Payment Portal</title>
+    <link rel="stylesheet" href="../css/style.css?v=2.1">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <button id="themeToggleBtn" class="theme-toggle-btn" onclick="toggleTheme()" style="position: fixed; top: 20px; right: 20px; z-index: 9999;">
+        <i class="fas fa-moon"></i>
+    </button>
+
+    <div class="dashboard">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h2><i class="fas fa-wallet"></i> SPP Staff</h2>
+            </div>
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a href="dashboard.html" class="nav-link">
+                        <i class="fas fa-home"></i>
+                        <span>Dashboard</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="payslips.html" class="nav-link active">
+                        <i class="fas fa-file-invoice-dollar"></i>
+                        <span>My Payslips</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="leave.html" class="nav-link">
+                        <i class="fas fa-calendar-alt"></i>
+                        <span>Leave Management</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="profile.html" class="nav-link">
+                        <i class="fas fa-user"></i>
+                        <span>My Profile</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link" onclick="logout()">
+                        <i class="fas fa-sign-out-alt"></i>
+                        <span>Logout</span>
+                    </a>
+                </li>
+            </ul>
+        </aside>
+
+        <main class="main-content">
+            <div class="header">
+                <div>
+                    <h1>My Payslips</h1>
+                    <p>View and download your payment history</p>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h2>Payment History</h2>
+                </div>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Month</th>
+                            <th>Basic Salary</th>
+                            <th>Allowances</th>
+                            <th>Deductions</th>
+                            <th>Gross Salary</th>
+                            <th>Net Salary</th>
+                            <th>Status</th>
+                            <th>Payment Date</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="payslipsTable">
+                        <tr>
+                            <td colspan="9" style="text-align: center;">Loading...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </main>
+    </div>
+
+    <div class="modal" id="payslipModal">
+        <div class="modal-content" style="max-width: 500px;">
+            <div class="modal-header">
+                <h2>Payslip Details</h2>
+                <button class="close-btn" onclick="closeModal()">&times;</button>
+            </div>
+            <div id="payslipContent">
+            </div>
+        </div>
+    </div>
+
+    <!-- AI Chat Widget -->
+    <div id="aiChatWidget" style="position: fixed; bottom: 20px; right: 20px; z-index: 1000;">
+        <button id="aiChatBtn" style="background: var(--primary); color: white; border: none; border-radius: 50%; width: 60px; height: 60px; font-size: 24px; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.2);">
+            <i class="fas fa-robot"></i>
+        </button>
+        <div id="aiChatBox" style="display: none; position: absolute; bottom: 80px; right: 0; width: 300px; background: white; border-radius: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); border: 1px solid #ddd; overflow: hidden; flex-direction: column; height: 400px;">
+            <div style="background: var(--primary); color: white; padding: 15px; font-weight: bold; display: flex; justify-content: space-between;">
+                <span>AI HR Assistant</span>
+                <i class="fas fa-times" id="closeChatBtn" style="cursor: pointer;"></i>
+            </div>
+            <div id="chatMessages" style="flex: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px;">
+                <div style="background: #f1f5f9; padding: 10px; border-radius: 10px; max-width: 80%; align-self: flex-start; font-size: 14px;">Hi! I'm your AI HR Assistant. Ask me about your leaves, payday, or taxes.</div>
+            </div>
+            <div style="padding: 10px; border-top: 1px solid #ddd; display: flex;">
+                <input type="text" id="chatInput" placeholder="Type a message..." style="flex: 1; border: 1px solid #ddd; border-radius: 5px; padding: 8px; outline: none;">
+                <button id="sendChatBtn" style="background: var(--primary); color: white; border: none; padding: 8px 15px; border-radius: 5px; margin-left: 5px; cursor: pointer;"><i class="fas fa-paper-plane"></i></button>
+            </div>
+        </div>
+    </div>
+
+    <script src="../js/app.js"></script>
+    <script>
+        // AI Chat Logic
+        document.getElementById('aiChatBtn').addEventListener('click', () => {
+            const box = document.getElementById('aiChatBox');
+            box.style.display = box.style.display === 'none' ? 'flex' : 'none';
+        });
+
+        document.getElementById('closeChatBtn').addEventListener('click', () => {
+            document.getElementById('aiChatBox').style.display = 'none';
+        });
+
+        async function sendChatMessage() {
+            const input = document.getElementById('chatInput');
+            const messages = document.getElementById('chatMessages');
+            const text = input.value.trim();
+            if (!text) return;
+
+            const userMsg = document.createElement('div');
+            userMsg.style.cssText = 'background: var(--primary); color: white; padding: 10px; border-radius: 10px; max-width: 80%; align-self: flex-end; font-size: 14px;';
+            userMsg.textContent = text;
+            messages.appendChild(userMsg);
+            input.value = '';
+            messages.scrollTop = messages.scrollHeight;
+
+            try {
+                const res = await apiRequest('/staff/ai/chat', {
+                    method: 'POST',
+                    body: JSON.stringify({ message: text })
+                });
+                const data = await res.json();
+
+                const aiMsg = document.createElement('div');
+                aiMsg.style.cssText = 'background: #f1f5f9; padding: 10px; border-radius: 10px; max-width: 80%; align-self: flex-start; font-size: 14px;';
+                aiMsg.textContent = data.response;
+                messages.appendChild(aiMsg);
+                messages.scrollTop = messages.scrollHeight;
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        document.getElementById('sendChatBtn').addEventListener('click', sendChatMessage);
+        document.getElementById('chatInput').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') sendChatMessage();
+        });
+
+        if (!checkStaffAuth()) {}
+
+        async function loadPayslips() {
+            const token = localStorage.getItem('token');
+            
+            const response = await fetch('http://localhost:8000/api/staff/payslips', {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            const payslips = await response.json();
+            
+            const tbody = document.getElementById('payslipsTable');
+            if (payslips.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="9" style="text-align: center;">No payslips found. Your payslips will appear here once generated by admin.</td></tr>';
+                return;
+            }
+            
+            tbody.innerHTML = payslips.map(p => `
+                <tr>
+                    <td>${getMonthName(p.month)} ${p.year}</td>
+                    <td>Rs.${p.basic_salary.toLocaleString('en-IN')}</td>
+                    <td>Rs.${p.total_allowances.toLocaleString('en-IN')}</td>
+                    <td>Rs.${p.total_deductions.toLocaleString('en-IN')}</td>
+                    <td>Rs.${p.gross_salary.toLocaleString('en-IN')}</td>
+                    <td><strong>Rs.${p.net_salary.toLocaleString('en-IN')}</strong></td>
+                    <td><span class="badge badge-${p.status === 'paid' ? 'success' : 'warning'}">${p.status}</span></td>
+                    <td>${p.payment_date ? new Date(p.payment_date).toLocaleDateString('en-IN') : '-'}</td>
+                    <td>
+                        <button class="action-btn view" onclick="viewPayslip(${p.id})">
+                            <i class="fas fa-eye"></i> View
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function closeModal() {
+            document.getElementById('payslipModal').classList.remove('active');
+        }
+
+        async function viewPayslip(id) {
+            const token = localStorage.getItem('token');
+            const user = JSON.parse(localStorage.getItem('user'));
+            
+            const response = await fetch('http://localhost:8000/api/staff/payslips', {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            const payslips = await response.json();
+            const payslip = payslips.find(p => p.id === id);
+            
+            if (!payslip) return;
+            
+            document.getElementById('payslipContent').innerHTML = `
+                <div style="padding: 20px; background: var(--light); border-radius: 10px; margin-bottom: 20px;">
+                    <h3 style="margin-bottom: 10px;"><i class="fas fa-building"></i> Staff Payment Portal</h3>
+                    <p><strong>Employee:</strong> ${user.full_name}</p>
+                    <p><strong>Employee ID:</strong> ${user.employee_id}</p>
+                    <p><strong>Pay Period:</strong> ${getMonthName(payslip.month)} ${payslip.year}</p>
+                </div>
+                
+                <div class="salary-breakdown">
+                    <h4 style="margin-bottom: 10px;">Earnings</h4>
+                    <div class="salary-item">
+                        <span>Basic Salary</span>
+                        <span>Rs.${payslip.basic_salary.toLocaleString('en-IN')}</span>
+                    </div>
+                    <div class="salary-item">
+                        <span>Total Allowances</span>
+                        <span>Rs.${payslip.total_allowances.toLocaleString('en-IN')}</span>
+                    </div>
+                    <div class="salary-item" style="font-weight: bold; border-top: 2px solid var(--dark);">
+                        <span>Gross Salary</span>
+                        <span>Rs.${payslip.gross_salary.toLocaleString('en-IN')}</span>
+                    </div>
+                </div>
+                
+                <div class="salary-breakdown" style="margin-top: 20px;">
+                    <h4 style="margin-bottom: 10px;">Deductions</h4>
+                    <div class="salary-item">
+                        <span>Total Deductions</span>
+                        <span>Rs.${payslip.total_deductions.toLocaleString('en-IN')}</span>
+                    </div>
+                </div>
+                
+                <div class="salary-breakdown" style="margin-top: 20px;">
+                    <div class="salary-item total">
+                        <span>Net Salary</span>
+                        <span style="color: var(--success);">Rs.${payslip.net_salary.toLocaleString('en-IN')}</span>
+                    </div>
+                </div>
+                
+                <div style="margin-top: 20px; text-align: center;">
+                    <span class="badge badge-${payslip.status === 'paid' ? 'success' : 'warning'}">${payslip.status.toUpperCase()}</span>
+                </div>
+            `;
+            
+            document.getElementById('payslipModal').classList.add('active');
+        }
+
+        loadPayslips();
+    </script>
+</body>
+</html>

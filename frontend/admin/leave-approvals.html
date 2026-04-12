@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Leave Approvals - Staff Payment Portal</title>
+    <link rel="stylesheet" href="../css/style.css?v=2.1">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <button id="themeToggleBtn" class="theme-toggle-btn" onclick="toggleTheme()" style="position: fixed; top: 20px; right: 20px; z-index: 9999;">
+        <i class="fas fa-moon"></i>
+    </button>
+
+    <div class="dashboard">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h2><i class="fas fa-wallet"></i> SPP Admin</h2>
+            </div>
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a href="dashboard.html" class="nav-link">
+                        <i class="fas fa-home"></i>
+                        <span>Dashboard</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="staff-management.html" class="nav-link">
+                        <i class="fas fa-users"></i>
+                        <span>Staff Management</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="payroll.html" class="nav-link">
+                        <i class="fas fa-money-check-alt"></i>
+                        <span>Payroll</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="leave-approvals.html" class="nav-link active">
+                        <i class="fas fa-calendar-check"></i>
+                        <span>Leave Approvals</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="reports.html" class="nav-link">
+                        <i class="fas fa-chart-bar"></i>
+                        <span>Reports</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link" onclick="logout()">
+                        <i class="fas fa-sign-out-alt"></i>
+                        <span>Logout</span>
+                    </a>
+                </li>
+            </ul>
+        </aside>
+
+        <main class="main-content">
+            <div class="header">
+                <div>
+                    <h1>Leave Approvals</h1>
+                    <p>Review and act on staff leave requests</p>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h2>Pending & Expected Requests</h2>
+                </div>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Employee</th>
+                            <th>Type</th>
+                            <th>From</th>
+                            <th>To</th>
+                            <th>Days</th>
+                            <th>Reason</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="leaveList">
+                        <tr>
+                            <td colspan="8" style="text-align: center;">Loading...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </main>
+    </div>
+
+    <script src="../js/app.js"></script>
+    <script>
+        if (!checkAdminAuth()) {}
+
+        async function loadLeaves() {
+            try {
+                const response = await apiRequest('/admin/leaves');
+                const leaves = await response.json();
+                const tbody = document.getElementById('leaveList');
+                if (leaves.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="8" style="text-align: center;">No leave requests found.</td></tr>';
+                } else {
+                    tbody.innerHTML = leaves.map(l => {
+                        const statusClass = l.status === 'approved' ? 'success' : (l.status === 'rejected' ? 'danger' : 'warning');
+                        const actionButtons = l.status === 'pending' ? `
+                            <button class="btn btn-sm" style="background:var(--success); color:white; margin-right:5px; padding: 5px 10px;" onclick="updateLeave(${l.id}, 'approved')">Approve</button>
+                            <button class="btn btn-sm" style="background:var(--danger); color:white; padding: 5px 10px;" onclick="updateLeave(${l.id}, 'rejected')">Reject</button>
+                        ` : `<span style="color:#666; font-size:12px;">Actioned</span>`;
+                        
+                        return `
+                            <tr>
+                                <td>${l.employee_name}<br><small style="color:#666;">${l.employee_id}</small></td>
+                                <td style="text-transform: capitalize;">${l.leave_type}</td>
+                                <td>${new Date(l.from_date).toLocaleDateString()}</td>
+                                <td>${new Date(l.to_date).toLocaleDateString()}</td>
+                                <td>${l.days_count}</td>
+                                <td style="max-width: 150px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="${l.reason}">${l.reason}</td>
+                                <td><span class="badge badge-${statusClass}">${l.status}</span></td>
+                                <td>${actionButtons}</td>
+                            </tr>
+                        `;
+                    }).join('');
+                }
+            } catch (err) {
+                console.error(err);
+                showToast("Error loading leave requests", "error");
+            }
+        }
+
+        async function updateLeave(id, status) {
+            try {
+                const res = await apiRequest(`/admin/leaves/${id}/status?status=${status}`, {
+                    method: 'PUT'
+                });
+                if (res.ok) {
+                    showToast(`Leave request ${status}`);
+                    loadLeaves();
+                } else {
+                    showToast('Error updating status', 'error');
+                }
+            } catch(e) {
+                showToast('Server error', 'error');
+            }
+        }
+
+        loadLeaves();
+    </script>
+</body>
+</html>
