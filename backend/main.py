@@ -400,6 +400,30 @@ async def staff_ai_chat(
             
     return {"response": response}
 
+@app.post("/api/admin/ai/chat")
+async def admin_ai_chat(
+    msg: ChatMessage,
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(require_admin)
+):
+    text = msg.message.lower()
+    response = "I'm the System Administrator AI. I can securely query the database. Try asking about 'staff count', 'total payroll', or 'pending work'."
+    
+    if "staff" in text or "employee" in text or "how many" in text:
+        count = db.query(models.User).filter(models.User.role == "staff").count()
+        response = f"The organization currently has {count} active staff members registered."
+    elif "payroll" in text or "cost" in text or "total" in text:
+        from sqlalchemy import func
+        total = db.query(func.sum(models.Payroll.net_salary)).scalar() or 0
+        response = f"The total lifetime payroll dispatched by the organization is Rs.{total:,.2f}."
+    elif "pending" in text or "work" in text or "leave" in text:
+        leave_count = db.query(models.LeaveRequest).filter(models.LeaveRequest.status == "pending").count()
+        pay_count = db.query(models.Payroll).filter(models.Payroll.status == "pending").count()
+        
+        response = f"You have {leave_count} pending leave requests to approve. There are also {pay_count} pending payrolls."
+        
+    return {"response": response}
+
 @app.get("/api/admin/ai/predict-payroll")
 async def predict_payroll(
     db: Session = Depends(get_db),

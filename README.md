@@ -12,7 +12,13 @@ After cloning from GitHub, setup is automatic using one cross-platform script.
 2. Clone repo
 3. Run setup:
 
-Windows:
+Windows (first-time setup):
+
+```bat
+setup.bat
+```
+
+Windows (normal start after setup):
 
 ```bat
 start.bat
