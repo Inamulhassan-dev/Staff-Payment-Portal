@@ -1,16 +1,23 @@
 # Staff Payment Portal
 
-Production-ready payroll management system with FastAPI + SQLite + responsive frontend.
+Production-ready payroll management system with FastAPI + SQLite and responsive frontend pages.
 
-## Works on Windows, Linux, and macOS
+## Clone and Run (Recommended)
 
-After cloning from GitHub, setup is automatic using one cross-platform script.
+### Prerequisites
 
-## Quick Start
+1. Python 3.10+
+2. Git
+3. Internet connection for first-time dependency install
 
-1. Install Python 3.10+ and Git
-2. Clone repo
-3. Run setup:
+### 1) Clone
+
+```bash
+git clone https://github.com/Inamulhassan-dev/Staff-Payment-Portal.git
+cd Staff-Payment-Portal
+```
+
+### 2) Start
 
 Windows (first-time setup):
 
@@ -18,7 +25,7 @@ Windows (first-time setup):
 setup.bat
 ```
 
-Windows (normal start after setup):
+Windows (normal start after first setup):
 
 ```bat
 start.bat
@@ -32,9 +39,9 @@ python3 setup.py start
 
 macOS double-click option:
 
-- Double-click `setup.command`
+1. Double-click `setup.command`
 
-Stop server:
+### 3) Stop
 
 Windows:
 
@@ -48,9 +55,30 @@ Linux/macOS:
 python3 setup.py stop
 ```
 
-## Optional: Docker (all platforms)
+## What Setup Does Automatically
 
-If Docker Desktop/Engine is installed:
+1. Creates virtual environment `.venv` (if missing)
+2. Upgrades `pip`
+3. Installs packages from `backend/requirements.txt`
+4. Stops old process on port `8000` (if any)
+5. Starts FastAPI backend
+6. Auto-creates SQLite DB on first run
+7. Auto-creates default admin on first run
+8. Opens login page in browser
+
+## App URLs
+
+1. Login: `http://localhost:8000/login.html`
+2. API docs: `http://localhost:8000/docs`
+
+## Default Admin Login
+
+1. Email: `admin@staff.com`
+2. Password: `admin123`
+
+## Optional: Docker
+
+Start:
 
 ```bash
 docker compose up -d
@@ -62,46 +90,33 @@ Stop:
 docker compose down
 ```
 
-## What setup does automatically
+## Troubleshooting
 
-- create virtual environment (`.venv`)
-- install dependencies from `backend/requirements.txt`
-- stop old process on port 8000 (if running)
-- start FastAPI backend
-- auto-create SQLite DB (`backend/staff_payment.db`) on first run
-- auto-create default admin on first run
-- open browser to login page
+### Python not found
 
-## URLs
+1. Install Python 3.10+ from python.org.
+2. During install, enable "Add Python to PATH".
+3. Reopen terminal and run setup again.
 
-- App login: `http://localhost:8000/login.html`
-- API docs: `http://localhost:8000/docs`
+### Port 8000 already in use
 
-## Default login
+1. Run `stop.bat`.
+2. Run `start.bat` again.
 
-- Email: `admin@staff.com`
-- Password: `admin123`
+### Dependencies fail to install
 
-## Project structure
+1. Check internet connection.
+2. Run `setup.bat` again.
 
-```
-staff-payment-portal/
-├── backend/
-│   ├── auth.py
-│   ├── database.py
-│   ├── main.py
-│   ├── models.py
-│   └── requirements.txt
-├── frontend/
-├── start.bat
-├── stop.bat
-├── setup.py
-├── Dockerfile
-├── docker-compose.yml
-└── README.md
-```
+### Fresh reset of local app data
+
+Delete local files and run setup again:
+
+1. `.venv/`
+2. `staff_payment.db`
+3. `backend/staff_payment.db` (if present)
 
 ## Notes
 
-- `backend/staff_payment.db` is ignored in Git to keep repository clean.
-- New laptop gets a fresh local DB automatically.
+1. Runtime files (DB/logs/venv) are not meant for Git commits.
+2. New machines get fresh local DB automatically at first run.

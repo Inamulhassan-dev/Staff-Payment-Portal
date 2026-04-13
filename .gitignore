@@ -17,6 +17,12 @@ venv.bak/
 *.sqlite3
 spp.db
 backend/spp.db
+staff_payment.db
+backend/staff_payment.db
+
+# Runtime logs
+*.log
+backend/server.log
 
 # OS generated files
 .DS_Store
