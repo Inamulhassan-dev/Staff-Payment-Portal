@@ -3,6 +3,10 @@ __pycache__/
 *.py[cod]
 *$py.class
 *.so
+*.egg
+*.egg-info/
+dist/
+build/
 
 # Environments
 .env
@@ -13,7 +17,9 @@ ENV/
 env.bak/
 venv.bak/
 
-# Database
+# Database / runtime data
+*.db
+*.sqlite
 *.sqlite3
 spp.db
 backend/spp.db
@@ -26,7 +32,18 @@ backend/server.log
 
 # OS generated files
 .DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
 Thumbs.db
+
+# IDE / editor
+.idea/
+.vscode/
+*.swp
+*.swo
 
 # App specific
 bust_cache.py
