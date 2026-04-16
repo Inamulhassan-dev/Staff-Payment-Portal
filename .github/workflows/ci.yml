@@ -33,7 +33,7 @@ jobs:
       - name: Import check – backend modules
         working-directory: backend
         env:
-          SECRET_KEY: ci-test-secret-key-not-for-production
+          SECRET_KEY: ci-test-secret-key-for-testing-only-not-for-production-use
           DATABASE_URL: sqlite:///./ci_test.db
         run: |
           python -c "import models, database, auth, main; print('All backend modules imported OK')"
@@ -41,7 +41,7 @@ jobs:
       - name: Start backend and health-check
         working-directory: backend
         env:
-          SECRET_KEY: ci-test-secret-key-not-for-production
+          SECRET_KEY: ci-test-secret-key-for-testing-only-not-for-production-use
           DATABASE_URL: sqlite:///./ci_test.db
         run: |
           python main.py &
