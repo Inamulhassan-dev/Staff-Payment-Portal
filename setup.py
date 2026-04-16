@@ -12,6 +12,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent
 VENV_DIR = ROOT / ".venv"
 BACKEND_MAIN = ROOT / "backend" / "main.py"
+REQUIREMENTS_LOCK = ROOT / "backend" / "requirements-lock.txt"
 REQUIREMENTS = ROOT / "backend" / "requirements.txt"
 APP_URL = "http://localhost:8000/login.html"
 DOCS_URL = "http://localhost:8000/docs"
@@ -43,7 +44,8 @@ def install_deps():
     py = str(venv_python())
     print("[2/4] Installing dependencies...")
     run([py, "-m", "pip", "install", "--upgrade", "pip"])
-    run([py, "-m", "pip", "install", "-r", str(REQUIREMENTS)])
+    req_file = REQUIREMENTS_LOCK if REQUIREMENTS_LOCK.exists() else REQUIREMENTS
+    run([py, "-m", "pip", "install", "-r", str(req_file)])
 
 
 def is_port_open(port: int) -> bool:

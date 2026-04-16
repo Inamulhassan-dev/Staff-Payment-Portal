@@ -17,7 +17,24 @@ git clone https://github.com/Inamulhassan-dev/Staff-Payment-Portal.git
 cd Staff-Payment-Portal
 ```
 
-### 2) Start
+### 2) Configure environment (optional)
+
+Copy the example env file and edit values if needed:
+
+```bash
+cp .env.example .env
+```
+
+> **Important for production**: open `.env` and replace `SECRET_KEY` with a
+> strong random string. You can generate one with:
+> ```bash
+> python -c "import secrets; print(secrets.token_hex(32))"
+> ```
+
+The app works out-of-the-box with the defaults (SQLite DB, auto-created on
+first run), so this step is optional for local development.
+
+### 3) Start
 
 Windows (first-time setup):
 
@@ -41,7 +58,7 @@ macOS double-click option:
 
 1. Double-click `setup.command`
 
-### 3) Stop
+### 4) Stop
 
 Windows:
 
@@ -55,11 +72,12 @@ Linux/macOS:
 python3 setup.py stop
 ```
 
+
 ## What Setup Does Automatically
 
 1. Creates virtual environment `.venv` (if missing)
 2. Upgrades `pip`
-3. Installs packages from `backend/requirements.txt`
+3. Installs packages from `backend/requirements-lock.txt` (or `requirements.txt` as fallback)
 4. Stops old process on port `8000` (if any)
 5. Starts FastAPI backend
 6. Auto-creates SQLite DB on first run
